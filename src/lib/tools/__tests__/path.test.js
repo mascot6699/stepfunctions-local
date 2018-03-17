@@ -33,4 +33,30 @@ describe('Path', () => {
       },
     });
   });
+
+  it('should return task output for $ result path', () => {
+    const resultPath = '$';
+    const value = {
+      foo: 'foo',
+    };
+    const object = {
+      foo: 'bar',
+    };
+    expect(applyResultPath(object, resultPath, value)).toMatchObject({
+      foo: 'foo',
+    });
+  });
+
+  it('should return task input for null result path', () => {
+    const resultPath = null;
+    const value = {
+      foo: 'foo',
+    };
+    const object = {
+      foo: 'bar',
+    };
+    expect(applyResultPath(object, resultPath, value)).toMatchObject({
+      foo: 'bar',
+    });
+  });
 });
