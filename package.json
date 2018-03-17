@@ -33,7 +33,7 @@
     "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.test\\.jsx?$"
   },
   "dependencies": {
-    "asl-validator": "^1.0.6",
+    "asl-validator": "^1.0.7",
     "aws-sdk": "^2.176.0",
     "body-parser": "^1.18.2",
     "commander": "^2.13.0",
