@@ -160,7 +160,7 @@ class Task extends State {
           });
           const handledError = this.handleError(e);
           this.taskOutput = handledError.output;
-          this.mextStateFromCatch = handledError.nextState;
+          this.nextStateFromCatch = handledError.nextState;
         }
         break;
       case ACTIVITY:
@@ -177,7 +177,7 @@ class Task extends State {
           const err = Activity.getTaskFailureError(this.arn, this.taskToken);
           const handledError = this.handleError(err);
           this.taskOutput = handledError.output;
-          this.mextStateFromCatch = handledError.nextState;
+          this.nextStateFromCatch = handledError.nextState;
         }
         break;
       default:
