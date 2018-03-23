@@ -12,7 +12,9 @@ class Fail extends State {
       name: this.name,
     });
 
-    return {};
+    const error = new Error(this.state.Error);
+    error.name = this.state.Cause;
+    throw error;
   }
 }
 

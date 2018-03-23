@@ -14,6 +14,7 @@ describe('State machine', () => {
           },
           FailState: {
             Type: 'Fail',
+            Error: 'ExecutionFailure',
           },
         },
       };
@@ -24,9 +25,9 @@ describe('State machine', () => {
       const input = {};
       const stateMachineInstance = new StateMachine(stateMachineDefinition, execution);
       const result = await stateMachineInstance.execute(input);
-      expect(result).toEqual({});
+      expect(result).not.toBeDefined();
     } catch (e) {
-      expect(e).not.toBeDefined();
+      expect(e.message).toEqual('ExecutionFailure');
     }
   });
 
