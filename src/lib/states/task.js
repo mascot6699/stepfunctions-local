@@ -145,14 +145,16 @@ class Task extends State {
           } while (!result);
           if (result.Payload) {
             const payload = JSON.parse(result.Payload);
-            if (result.StatusCode !== 200) {
-              throw new Error(payload.errorMessage);
+            if (result.FunctionError) {
+              const error = new Error(payload.errorMessage);
+              error.name = result.FunctionError;
+              throw error;
             }
             this.taskOutput = payload;
-            addHistoryEvent(this.execution, 'LAMBDA_FUNCTION_SUCCEEDED', {
-              output: this.output,
-            });
           }
+          addHistoryEvent(this.execution, 'LAMBDA_FUNCTION_SUCCEEDED', {
+            output: this.output,
+          });
         } catch (e) {
           addHistoryEvent(this.execution, 'LAMBDA_FUNCTION_FAILED', {
             cause: e.name,
@@ -241,7 +243,9 @@ class Task extends State {
     const activityRegexp = /^arn:aws:states:.+:[0-9]+:activity:.+$/;
     if (lambdaRegexp.exec(this.arn)) {
       return LAMBDA;
-    } else if (activityRegexp.exec(this.arn)) {
+    }
+
+    if (activityRegexp.exec(this.arn)) {
       return ACTIVITY;
     }
     throw new Error(`Error while retrieving task type of resource: ${this.arn}`);

@@ -9,8 +9,8 @@
 
 #### :warning: **Important** : The package isn't stable yet, but is ready to be used: most features are available. Any contribution is warm welcome
 
-Stepfunctions-local provides a local AWS Step Functions server.  
-This package only aims at replacing AWS Step Functions in a local context.  
+Stepfunctions-local provides a local AWS Step Functions server.
+This package only aims at replacing AWS Step Functions in a local context.
 Its API is totally compliant with AWS service, thus you can use it for your tests.
 
 ## Why **stepfunctions-local**?
@@ -55,6 +55,8 @@ $> npm install --save stepfunctions-local
 
 ## How to use it ?
 
+You will find some help on the [Wiki](https://github.com/airware/stepfunctions-local/wiki) page.
+
 ### Start a server
 #### Using command line
 ```bash
@@ -67,7 +69,6 @@ Options:
   --region <region>                    the region the server should run on
   --lambda-region <lambda-region>      the region for lambda
   --lambda-endpoint <lambda-endpoint>  the endpoint for lambda
-  --silent                             whether you want to run the server in silent mode or not
   -h, --help                           output usage information
 ```
 
@@ -88,6 +89,14 @@ stepfunctionsLocal.start({
 - region: local
 - lambda-region: local
 - lambda-endpoint: http://localhost:4574
+
+### Configure logs
+The service does not log anything by default. It uses the [debug](https://www.npmjs.com/package/debug) package which is based on the `DEBUG` environment variable. You can log process info by setting it.
+
+Example:
+ ```bash
+ $> DEBUG=stepfunctions-local:* stepfunctions-local start
+ ```
 
 ### Play with it
 ```bash
@@ -177,7 +186,7 @@ $> stepfunctions-local start --lambda-endpoint http://localhost:4574 --lambda-re
 | ***Parallel*** | * |
 
 ## Want to contribute ?
-**Wow, that's great !**  
+**Wow, that's great !**
 Feedback, bug reports and pull requests are more than welcome !
 
 You can test your code with :
@@ -192,3 +201,6 @@ $> npm run test
 
 ## TODO
 - Add execution abortion related history events
+
+## License
+See [LICENSE](./LICENSE).

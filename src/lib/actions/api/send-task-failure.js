@@ -1,24 +1,25 @@
 const { errors, status, parameters } = require('../../../constants');
+const CustomError = require('../../error');
 
 function sendTaskFailure(params, activities) {
   /* check request parameters */
-  if (params.cause &&
-    (typeof params.cause !== 'string'
+  if (params.cause
+    && (typeof params.cause !== 'string'
     || params.cause.length > parameters.cause.MAX)
   ) {
-    throw new Error(`${errors.common.INVALID_PARAMETER_VALUE}: --cause`);
+    throw new CustomError('Invalid Parameter Value: cause', errors.common.INVALID_PARAMETER_VALUE);
   }
-  if (params.error &&
-    (typeof params.error !== 'string'
+  if (params.error
+    && (typeof params.error !== 'string'
     || params.error.length > parameters.error.MAX)
   ) {
-    throw new Error(`${errors.common.INVALID_PARAMETER_VALUE}: --error`);
+    throw new CustomError('Invalid Parameter Value: error', errors.common.INVALID_PARAMETER_VALUE);
   }
   if (typeof params.taskToken !== 'string'
     || params.taskToken.length < parameters.token.MIN
     || params.taskToken.length > parameters.token.MAX
   ) {
-    throw new Error(errors.sendTaskFailure.INVALID_TOKEN);
+    throw new CustomError(`Invalid Task Token: '${params.taskToken}'`, errors.sendTaskFailure.INVALID_TOKEN);
   }
 
   /* execute action */
@@ -34,9 +35,9 @@ function sendTaskFailure(params, activities) {
   });
 
   if (!task) {
-    throw new Error(errors.sendTaskFailure.TASK_DOES_NOT_EXIST);
+    throw new CustomError('Task Does Not Exist', errors.sendTaskFailure.TASK_DOES_NOT_EXIST);
   } else if (task.status === status.activity.TIMED_OUT) {
-    throw new Error(errors.sendTaskFailure.TASK_TIMED_OUT);
+    throw new CustomError('Task Timed Out', errors.sendTaskFailure.TASK_TIMED_OUT);
   }
 
   return {

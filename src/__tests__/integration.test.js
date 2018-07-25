@@ -42,6 +42,7 @@ const commands = {
   listStateMachines: 'list-state-machines',
   createStateMachine: 'create-state-machine --name {{name}} --role {{role}} --definition {{definition}}',
   describeStateMachine: 'describe-state-machine --state-machine-arn {{arn}}',
+  updateStateMachine: 'update-state-machine --state-machine-arn {{arn}} --role-arn {{role}}',
   describeStateMachineForExecution: 'describe-state-machine-for-execution --execution-arn {{arn}}',
   listExecutions: 'list-executions --state-machine-arn {{arn}}',
   startExecution: 'start-execution --state-machine-arn {{arn}} --name {{name}} --input {{input}}',
@@ -49,6 +50,8 @@ const commands = {
   getExecutionHistory: 'get-execution-history --execution-arn {{arn}}',
   deleteStateMachine: 'delete-state-machine --state-machine-arn {{arn}}',
   createActivity: 'create-activity --name {{name}}',
+  listActivities: 'list-activities',
+  describeActivity: 'describe-activity --activity-arn {{arn}}',
   getActivityTask: 'get-activity-task --activity-arn {{arn}}',
   sendTaskSuccess: 'send-task-success --task-token {{token}} --task-output {{output}}',
   sendTaskHeartbeat: 'send-task-heartbeat --task-token {{token}}',
@@ -87,7 +90,7 @@ describe('Integration tests (execute a simple state machine)', () => {
     }
   });
 
-  it('should describe the state machines', async () => {
+  it('should describe the state machine', async () => {
     try {
       const stateMachine = data.stateMachines[0];
       const command = commands.describeStateMachine
@@ -115,6 +118,23 @@ describe('Integration tests (execute a simple state machine)', () => {
         creationDate: data.stateMachines[0].creationDate,
         stateMachineArn: data.stateMachines[0].stateMachineArn,
       });
+    } catch (e) {
+      expect(e).not.toBeDefined();
+    }
+  });
+
+  it('should update a state machine', async () => {
+    try {
+      const updatedRoleArn = 'arn:aws:iam::0123456789:role/service-role/UpdatedMyRole';
+      const stateMachine = data.stateMachines[0];
+      const command = commands.updateStateMachine
+        .replace('{{arn}}', stateMachine.stateMachineArn)
+        .replace('{{role}}', updatedRoleArn);
+      const res = await exec(command);
+      expect(res).toMatchObject({
+        updateDate: expect.any(Number),
+      });
+      stateMachine.roleArn = updatedRoleArn;
     } catch (e) {
       expect(e).not.toBeDefined();
     }
@@ -245,14 +265,27 @@ describe('Integration tests (execute a state machine with activity)', () => {
     }
   });
 
-  it('should create an activity', async () => {
+  it('should create an activity, list and describe it', async () => {
     try {
       const activityName = data.activities[0].name;
-      const command = commands.createActivity
+      const commandCreate = commands.createActivity
         .replace('{{name}}', activityName);
-      const res = await exec(command);
+      const res = await exec(commandCreate);
       Object.assign(data.activities[0], res);
       expect(res.activityArn).toEqual(`arn:aws:states:local:0123456789:activity:${activityName}`);
+
+      const commandList = commands.listActivities;
+      const resList = await exec(commandList);
+      expect(resList.activities).toHaveLength(1);
+
+      const commandDescribe = commands.describeActivity
+        .replace('{{arn}}', `arn:aws:states:local:0123456789:activity:${activityName}`);
+      const resDescribe = await exec(commandDescribe);
+      expect(resDescribe.activityArn).toEqual(`arn:aws:states:local:0123456789:activity:${activityName}`);
+      expect(resDescribe.name).toEqual(activityName);
+      expect(resDescribe.creationDate).toBeLessThan(Date.now());
+
+      expect(resList.activities).toContainEqual(resDescribe);
     } catch (e) {
       expect(e).not.toBeDefined();
     }
