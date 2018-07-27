@@ -100,7 +100,7 @@ function reducer(state = initialState, action = null) {
       const stateCopy = Object.assign({}, state);
       const activity = stateCopy.activities.find(a => a.activityArn === result.activityArn);
       const task = activity.tasks.find(t => t.taskToken === result.taskToken);
-      if (task) {
+      if (result.taskToken) {
         Object.assign(task, {
           workerName: result.workerName,
           heartbeat: result.heartbeat,
